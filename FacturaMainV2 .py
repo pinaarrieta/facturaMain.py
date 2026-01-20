@@ -1,7 +1,7 @@
-#****************************************  Extractor XML  v2 *****************************************************
+#****************************************  Extractor XML   *******************************************************
 # EricK Genaro Piña Arrieta Barbosa
 # Proyecto: Extractor de datos XML en Python
-# Fecha: 2/11/2025
+# Fecha: 20/01/2025
 # Descripción: Este proyecto tiene como objetivo extraer y procesar datos de un XML CFDI 4 utilizando Python.
 #*****************************************************************************************************************
 
@@ -9,20 +9,21 @@ import pandas as pd
 import xml.etree.ElementTree as ET
 from openpyxl import load_workbook
 import os
+import platform
 
 #-------------------------------------------  Función para definir ruta  ----------------------------------------#
 def definir_ruta_archivos():
-    print('\nProbablemente tus archivos se encuentran en la carpeta de Descargas')
-    print('Ejemplo en Windows: C:/Users/TuUsuario/Downloads/CFDI00000000.xml')
-    print('Ejemplo en Linux Ubuntu: /home/TuUsuario/Descargas/CFDI00000000.xml\n')
+    #print('\nProbablemente tus archivos se encuentran en la carpeta de Descargas')
+    #print('Ejemplo en Windows: C:/Users/TuUsuario/Downloads/CFDI00000000.xml')
+    #print('Ejemplo en Linux Ubuntu: /home/TuUsuario/Descargas/CFDI00000000.xml\n')
     ruta = input('Ingrese la ruta completa del archivo XML: ').strip()
 
     if not os.path.exists(ruta):
         print('\nRuta inválida o archivo no encontrado. Inténtalo de nuevo.\n')
         return definir_ruta_archivos()
     
-    print('\nVerifica si la ruta y el nombre del archivo son correctos.')
-    input('Presiona ENTER para continuar ...\n')
+    #print('\nVerifica si la ruta y el nombre del archivo son correctos.')
+    #input('Presiona ENTER para continuar ...\n')
     return ruta
 
 
@@ -125,8 +126,8 @@ def crearExcelconEncabezados(nombreXLS):
     ]
 
     df = pd.DataFrame(columns=encabezados)
-    print('\nVista previa del dataframe vacío:')
-    print(df)
+    #print('\nVista previa del dataframe vacío:')
+    #print(df)
 
     ruta = input('\nDefine la ruta donde se guardará el archivo (termina con / o \\): ').strip()
     if not os.path.isdir(ruta):
@@ -161,6 +162,13 @@ def insertarFilaCFDI(ruta_archivo, diccionario):
 
     print("\nFila agregada exitosamente.\n")
 
+#-----------------------------------------------Limpiar pantalla------------------------------------------------#
+def limpiar_pantalla():
+    """Limpia la consola para una mejor visualización."""
+    if platform.system() == "Windows":
+        os.system("cls")
+    else: # Linux y macOS
+        os.system("clear")
 
 #-------------------------------------------  Programa principal  -----------------------------------------------#
 if __name__ == "__main__":
@@ -172,21 +180,22 @@ if __name__ == "__main__":
     nombreXLS = input('Nombre del archivo (sin extensión): ').strip() + '.xlsx'
     pathXLS = crearExcelconEncabezados(nombreXLS)
     print(f'\nEl archivo fue creado correctamente en: {pathXLS}\n')
-    input('Presiona ENTER para continuar y cargar tus CFDI...')
+    #input('Presiona ENTER para continuar y cargar tus CFDI...')
 
     contador = 0
     while True:
+        limpiar_pantalla()
         registro = parseXML()
         if registro is None:
             print('No se pudo procesar el XML. Intenta con otro archivo.')
         else:
-            print('\nLos datos extraídos son:\n', registro)
+            #print('\nLos datos extraídos son:\n', registro)
             elDiccionario = convertir_lista_a_diccionario(registro)
             insertarFilaCFDI(pathXLS, elDiccionario)
             contador += 1
 
-        continuar = input('¿Deseas agregar otro CFDI? (s/n): ').strip().lower()
-        if continuar != 's':
+        continuar = input('¿Deseas agregar otro CFDI?, Enter para continuar, n para terminar: ').strip().lower()
+        if continuar == 'n':
             break
 
     print(f'\nSe procesaron correctamente {contador} archivo(s).')
@@ -194,5 +203,4 @@ if __name__ == "__main__":
     print('************************************** Fin del programa *****************************************************')
     print('*************************************************************************************************************')
     print('Gracias por usar la aplicación. Cualquier comentario a: pinaarrieta@yahoo.com.mx\n')
-
     input('Presiona ENTER para finalizar...')
